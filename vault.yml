@@ -1,0 +1,6 @@
+---
+nginx_user: admin
+nginx_password: admin
+ansible_user: user
+ansible_password: password
+ansible_sudo_pass: password

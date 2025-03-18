@@ -1,0 +1,44 @@
+---
+- name: Install Nginx, apache2-utils and passlib
+  apt:
+    name:
+      - nginx
+      - apache2-utils
+      - python3-passlib
+    state: present
+    update_cache: yes
+
+- name: Create .htpasswd file
+  htpasswd:
+    path: /etc/nginx/.htpasswd
+    name: "{{ nginx_user }}"
+    password: "{{ nginx_password }}"
+    state: present
+
+- name: Create directory for HTML
+  file:
+    path: /var/www/html
+    state: directory
+
+- name: Deploy HTML template
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+
+- name: Deploy Nginx configuration
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/default
+  notify: Restart Nginx
+  changed_when: true
+
+- name: Enable Nginx service
+  service:
+    name: nginx
+    enabled: yes
+    state: started
+
+- name: Start Nginx
+  service:
+    name: nginx
+    state: started
